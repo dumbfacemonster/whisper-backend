@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const tweetSchema = mongoose.Schema({
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
-    date: new Date,
+    date: Date,
     content: String,
-    hashtag: String,
+    hashtag: Array,
     likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
    });
 
