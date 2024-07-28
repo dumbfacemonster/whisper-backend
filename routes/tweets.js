@@ -2,13 +2,16 @@ var express = require('express');
 var router = express.Router();
 require('../models/connection');
 const Tweet = require('../models/tweets');
+const User = require('../models/users')
 
 // GET all tweets
 router.get('/', (req, res) => {
     Tweet.find()
+    .populate('author')
     .then(data => {
         if (data) {
-        res.json({result: true, tweets: data})
+        const sortedTweets = data.sort((a, b) => b.date - a.date)
+        res.json({result: true, tweets: sortedTweets})
         }
         else {
         res.json({result: false});
@@ -31,17 +34,24 @@ else {
     
 }
 
- const newTweet = new Tweet ({
-    author: req.body.author,
-    date: new Date(),
-    content: req.body.content,
-    hashtag: saveHashtag,
- })
- 
- newTweet.save().then(data => {
-    res.json({result: true, newTweet: data})
- })
-})
+  User.findOne({token: req.body.author})
+  .then(data => {
+    const author = data._id;
+    const newTweet = new Tweet ({
+        author: author,
+        date: new Date(),
+        content: req.body.content,
+        hashtag: saveHashtag,
+     })
+     newTweet.save()
+     .then(data => data.populate('author'))
+     .then(data => {
+        res.json({result: true, newTweet: data})
+     })
+        
+    }) 
+  })
+
 
 //DELETE a tweet
 router.delete('/:tweetId', (req, res) => {
