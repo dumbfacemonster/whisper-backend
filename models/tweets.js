@@ -5,7 +5,7 @@ const tweetSchema = mongoose.Schema({
     date: Date,
     content: String,
     hashtag: Array,
-    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
+    likedBy: Array,
    });
 
    const Tweet = mongoose.model('tweets', tweetSchema)

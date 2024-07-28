@@ -3,6 +3,7 @@ var router = express.Router();
 require('../models/connection');
 const Tweet = require('../models/tweets');
 const User = require('../models/users')
+const { checkBody } = require('../modules/checkBody')
 
 // GET all tweets
 router.get('/', (req, res) => {
@@ -58,6 +59,33 @@ router.delete('/:tweetId', (req, res) => {
     Tweet.deleteOne({_id: req.params.tweetId})
     .then(() => {
         res.json({result: true})
+    })
+})
+
+//UPDATE likes of a tweet
+router.put('/likes', (req, res) => {
+    if (!checkBody(req.body, ['token', '_id'])) {
+        res.json({result: false, error: "Missing or empty fields"});
+        return;
+      }
+
+    Tweet.findById(req.body._id)
+    .then(data => {
+       console.log(data)
+       if (!data.likedBy.some((e) => e === req.body.token)) {
+        data.likedBy = [...data.likedBy, req.body.token];
+        data.save()
+        .then((newData) => {
+        res.json({result: true, info: 'added', tweet: newData})
+        })
+        }
+        else {
+          data.likedBy = data.likedBy.filter((e) => e !== req.body.token)
+          data.save().then((newData) => {
+           console.log('deleted')
+           res.json({result: true, info: 'deleted', tweet: newData})
+        })
+        }
     })
 })
 
