@@ -89,4 +89,42 @@ router.put('/likes', (req, res) => {
     })
 })
 
+//GET all trends
+router.get('/trends', (req, res) => {
+    Tweet.find()
+    .then(data => {
+        //console.log(data);
+        let trends = [];
+        let loopTime = data.length;
+        for (let i=0; i<loopTime; i++) {
+            for (let j=0; j<data[i].hashtag.length; j++) {
+                let obj = {};
+                if (!trends.some((e) => e.tag === data[i].hashtag[j]
+                && !data.some((e) => e.hashtag.includes((f) => f === data[i].hashtag[j] )))) {
+                    console.log('false')
+                    obj.tag = data[i].hashtag[j];
+                    obj.nb = 1;
+                    console.log(obj)
+                    trends.push(obj)
+                    data[i].hashtag.splice(j, 1)
+                    //console.log(trends)
+                }
+                else {
+                    console.log('true')
+                    const index = trends.findIndex(trend => trend.tag === data[i].hashtag[j]);
+                    //console.log(i)
+                    trends[index].nb += 1;
+                }
+
+            }
+        }
+        trends = trends.sort((a, b) => b.nb - a.nb);
+        trends = trends.splice(0, 10)
+        return trends;
+    })
+    .then(data => {
+        res.json({result: true, trends: data})
+    })
+})
+
 module.exports = router;
