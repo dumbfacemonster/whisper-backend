@@ -23,9 +23,9 @@ router.get('/', (req, res) => {
 
 // POST a new tweet
 router.post('/', (req, res) => {
-const pattern = /#[a-z0-9]*/g
+/* const pattern = /#[A-z0-9]* /gi
 const hashtag = req.body.content.match(pattern);
-console.log(hashtag)
+console.log(hashtag) 
 
 let saveHashtag;
 const arrHash = []
@@ -43,21 +43,22 @@ else {
     saveHashtag = arrHash;
     console.log(saveHashtag)
     
-}
-
+} */
+    console.log(req.body)
   User.findOne({token: req.body.author})
   .then(data => {
     const author = data._id;
+
     const newTweet = new Tweet ({
         author: author,
         date: new Date(),
         content: req.body.content,
-        hashtag: saveHashtag,
+        hashtag: req.body.hashtag,
      })
      newTweet.save()
      .then(data => data.populate('author'))
      .then(data => {
-        res.json({result: true, newTweet: data})
+        res.json({result: true, newTweet: data, req: req.body})
      })
         
     }) 

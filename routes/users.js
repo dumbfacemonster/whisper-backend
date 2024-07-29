@@ -23,10 +23,10 @@ router.post('/signup', (req, res)  => {
         firstname: req.body.firstname,
         username: req.body.username,
         password: hash,
-        token,
+        token: token,
       });
-      newUser.save().then(() => {
-        res.json({result: true, newUser})
+      newUser.save().then((data) => {
+        res.json({result: true, user: data})
       })
     }
     else {
