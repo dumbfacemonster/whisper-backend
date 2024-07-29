@@ -3,7 +3,8 @@ var router = express.Router();
 require('../models/connection');
 const Tweet = require('../models/tweets');
 const User = require('../models/users')
-const { checkBody } = require('../modules/checkBody')
+const { checkBody } = require('../modules/checkBody');
+const { error } = require('console');
 
 // GET all tweets
 router.get('/', (req, res) => {
@@ -24,14 +25,23 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
 const pattern = /#[a-z0-9]*/g
 const hashtag = req.body.content.match(pattern);
+console.log(hashtag)
 
 let saveHashtag;
+const arrHash = []
 
 if (!hashtag) {
     saveHashtag = [];
 }
 else {
     saveHashtag = hashtag;
+
+    for (let tag of saveHashtag) {
+        newTag = tag.slice(1);
+        arrHash.push(newTag)
+    }
+    saveHashtag = arrHash;
+    console.log(saveHashtag)
     
 }
 
@@ -124,6 +134,20 @@ router.get('/trends', (req, res) => {
     })
     .then(data => {
         res.json({result: true, trends: data})
+    })
+})
+
+//GET tweets with #
+router.get('/trend/:tag', (req, res) => {
+    Tweet.find({hashtag: req.params.tag })
+    .then(data => {
+        if (data.length >=1) {
+            console.log(data)
+            res.json({result: true, tweets: data})
+        }
+        else {
+            res.json({result: false, tweets: data})
+        }
     })
 })
 
