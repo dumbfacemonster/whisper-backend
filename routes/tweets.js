@@ -141,6 +141,7 @@ router.get('/trends', (req, res) => {
 //GET tweets with #
 router.get('/trend/:tag', (req, res) => {
     Tweet.find({hashtag: req.params.tag })
+    .populate('author')
     .then(data => {
         if (data.length >=1) {
             console.log(data)
